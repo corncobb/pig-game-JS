@@ -1,4 +1,4 @@
-var scores, roundScore, activePlayer, dice, gamePlaying;
+var scores, roundScore, activePlayer, dice, gamePlaying, lastDice;
 
 init();
 
@@ -17,7 +17,13 @@ document.querySelector('.btn-roll').addEventListener('click', () => {
         diceDOM.src = 'dice-' + dice + '.png';
 
         // 3. Update the round score IF the rolled number was NOT a 1
-        if (dice !== 1) {
+        if (dice === 6 && lastDice === 6) {
+            // Player looses score
+            scores[activePlayer] = 0;
+            document.querySelector('#score-' + activePlayer).textContent = '0';
+            nextPlayer();
+
+        } else if (dice !== 1) {
             // Add score
             roundScore += dice;
 
@@ -26,6 +32,9 @@ document.querySelector('.btn-roll').addEventListener('click', () => {
             // Next player
             nextPlayer()
         }
+
+        lastDice = dice;
+
     }
 
 });
@@ -41,9 +50,17 @@ document.querySelector('.btn-hold').addEventListener('click', () => {
         // Update the UI
         document.querySelector('#score-' + activePlayer).textContent = scores[activePlayer];
 
+        var input = document.querySelector('.final-score').value;
+
+        if (input) {
+            var winningScore = input;
+        } else {
+            winningScore = 100;
+        }
+
         // Check if player won the game
 
-        if (scores[activePlayer] >= 100) {
+        if (scores[activePlayer] >= winningScore) {
             gamePlaying = false;
             document.querySelector('#name-' + activePlayer).textContent = 'Winner!';
             document.querySelector('.dice').style.display = 'none';
